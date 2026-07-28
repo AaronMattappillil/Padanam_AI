@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite+aiosqlite:///./padanam.db"
     CHROMA_PERSIST_DIR: str = "./chroma_db"
 
+    # DEMO MODE flag - Bypasses login requirement and automatically injects demo role accounts
+    DEMO_MODE: bool = True  # DEMO MODE
+
     LLM_PROVIDER: str = "local"  # "local", "openai", "gemini"
     OPENAI_API_KEY: Optional[str] = None
     GEMINI_API_KEY: Optional[str] = None

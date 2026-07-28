@@ -7,7 +7,12 @@ from fastapi.security import OAuth2PasswordBearer
 from app.core.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
+
+# DEMO MODE: auto_error=False allows requests without Bearer tokens to reach get_current_user
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl=f"{settings.API_V1_STR}/auth/login",
+    auto_error=not settings.DEMO_MODE  # DEMO MODE
+)
 
 ALGORITHM = "HS256"
 

@@ -1,8 +1,10 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
+from app.core.config import settings
 from app.db.session import get_db
 from app.models.user import User, StudentProfile, TeacherProfile, ParentProfile, UserRole
 from app.models.curriculum import Board
@@ -20,9 +22,65 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 # ---------------------------------------------------------------------------
 
 async def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    token: Optional[str] = Depends(oauth2_scheme),
     db: AsyncSession = Depends(get_db),
 ) -> User:
+    # DEMO MODE
+    if settings.DEMO_MODE:
+        target_email = "student@padanam.ai"
+        if token:
+            tok_lower = token.lower()
+            if "teacher" in tok_lower:
+                target_email = "teacher@padanam.ai"
+            elif "parent" in tok_lower:
+                target_email = "parent@padanam.ai"
+            elif "admin" in tok_lower:
+                target_email = "admin@padanam.ai"
+            elif "student" in tok_lower:
+                target_email = "student@padanam.ai"
+            else:
+                # Try standard JWT decode in DEMO_MODE as fallback
+                try:
+                    payload = decode_token(token)
+                    user_id = payload.get("sub")
+                    if user_id:
+                        user = (await db.execute(
+                            select(User)
+                            .options(
+                                selectinload(User.student_profile),
+                                selectinload(User.teacher_profile),
+                                selectinload(User.parent_profile),
+                            )
+                            .where(User.id == int(user_id))
+                        )).scalars().first()
+                        if user:
+                            return user
+                except Exception:
+                    pass
+
+        # Fetch matching demo user automatically
+        user = (await db.execute(
+            select(User)
+            .options(
+                selectinload(User.student_profile),
+                selectinload(User.teacher_profile),
+                selectinload(User.parent_profile),
+            )
+            .where(User.email == target_email)
+        )).scalars().first()
+
+        if user:
+            return user
+    # END DEMO MODE
+
+    # Standard production JWT authentication
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
     payload = decode_token(token)
     user_id = payload.get("sub")
     if not user_id:

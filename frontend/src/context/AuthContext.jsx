@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { authService } from '../services/authService';
 
 const AuthContext = createContext();
@@ -18,6 +18,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // DEMO MODE: Instantly sets selected demo user role without entering credentials
+  const loginAsDemoRole = (role) => { // DEMO MODE
+    const userObj = authService.continueAsDemoRole(role);
+    setUser(userObj);
+    return userObj;
+  }; // DEMO MODE
+
   const register = async (userData) => {
     setLoading(true);
     try {
@@ -35,7 +42,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, loginAsDemoRole, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
