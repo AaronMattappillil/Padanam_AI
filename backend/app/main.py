@@ -21,7 +21,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -33,6 +33,13 @@ async def startup_event():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     logger.info("Database initialization complete.")
+
+    try:
+        from app.db.init_db import seed_data
+        await seed_data()
+        logger.info("Auto-seeding of curriculum and demo data completed.")
+    except Exception as e:
+        logger.error(f"Error during auto-seeding: {e}")
 
 
 # Centralized Exception Handler
