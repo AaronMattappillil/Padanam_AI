@@ -29,13 +29,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const selectRole = (role) => {
+    const data = authService.selectRole(role);
+    setUser(data);
+    return data;
+  };
+
   const logout = () => {
     authService.logout();
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, selectRole }}>
       {children}
     </AuthContext.Provider>
   );
