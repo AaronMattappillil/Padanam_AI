@@ -1,0 +1,32 @@
+# Python
+backend/venv/
+backend/__pycache__/
+backend/**/*.pyc
+backend/.pytest_cache/
+
+# Environment variables
+backend/.env
+frontend/.env
+frontend/.env.local
+
+# Node
+frontend/node_modules/
+
+# Vite
+frontend/dist/
+
+# Chroma DB
+backend/chroma_db/
+
+# Database
+backend/*.db
+backend/*.sqlite
+backend/*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
