@@ -8,7 +8,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('student@padanam.ai');
   const [password, setPassword] = useState('password123');
   const [error, setError] = useState('');
-  const { login, loginAsDemoRole, loading } = useAuth(); // DEMO MODE
+  const { login, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -16,20 +16,19 @@ export default function LoginPage() {
     setError('');
     try {
       const data = await login({ email, password });
-      if (data.role === 'teacher') navigate('/teacher');
-      else if (data.role === 'parent') navigate('/parent');
-      else if (data.role === 'admin') navigate('/admin');
+      if (data.role === 'teacher') navigate('/teacher-dashboard');
+      else if (data.role === 'parent') navigate('/parent-dashboard');
+      else if (data.role === 'admin') navigate('/admin-dashboard');
       else navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.detail || 'Login failed. Please check credentials.');
     }
   };
 
-  // DEMO MODE: Bypasses login screen credentials and routes directly to role dashboard
-  const handleDemoLogin = (role, path) => { // DEMO MODE
-    loginAsDemoRole(role); // DEMO MODE
-    navigate(path); // DEMO MODE
-  }; // DEMO MODE
+  const setDemoRole = (demoEmail) => {
+    setEmail(demoEmail);
+    setPassword('password123');
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -41,31 +40,11 @@ export default function LoginPage() {
           <span className="text-2xl font-black gradient-text">Padanam AI</span>
         </Link>
         <h2 className="text-2xl font-bold text-slate-100">Welcome Back to Padanam AI</h2>
-        <p className="text-sm text-slate-400">Log in or select an instant demo role below</p>
+        <p className="text-sm text-slate-400">Log in to continue your SCERT Kerala learning journey</p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="glass-panel p-8 rounded-2xl border border-slate-800 space-y-6">
-          
-          {/* DEMO MODE: Quick Role Selectors */}
-          <div className="space-y-2 pb-2 border-b border-slate-800"> {/* DEMO MODE */}
-            <p className="text-xs text-cyan-400 font-bold text-center uppercase tracking-wider">Demo Mode Instant Access</p>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <button onClick={() => handleDemoLogin('student', '/dashboard')} className="p-2.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-center font-semibold">
-                Student Role
-              </button>
-              <button onClick={() => handleDemoLogin('teacher', '/teacher')} className="p-2.5 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 text-center font-semibold">
-                Teacher Role
-              </button>
-              <button onClick={() => handleDemoLogin('parent', '/parent')} className="p-2.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-center font-semibold">
-                Parent Role
-              </button>
-              <button onClick={() => handleDemoLogin('admin', '/admin')} className="p-2.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-center font-semibold">
-                Admin Role
-              </button>
-            </div>
-          </div>
-
           {error && (
             <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-center space-x-2">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -115,6 +94,25 @@ export default function LoginPage() {
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
+
+          {/* Quick Role Fill Buttons for Viva & Demo */}
+          <div className="pt-4 border-t border-slate-800/80 space-y-2">
+            <p className="text-xs text-slate-500 font-semibold text-center uppercase tracking-wider">Quick Demo Login Accounts</p>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <button onClick={() => setDemoRole('student@padanam.ai')} className="p-2 rounded-lg bg-slate-800/60 hover:bg-slate-800 text-cyan-300 border border-slate-700/60 text-center">
+                Student
+              </button>
+              <button onClick={() => setDemoRole('teacher@padanam.ai')} className="p-2 rounded-lg bg-slate-800/60 hover:bg-slate-800 text-teal-300 border border-slate-700/60 text-center">
+                Teacher
+              </button>
+              <button onClick={() => setDemoRole('parent@padanam.ai')} className="p-2 rounded-lg bg-slate-800/60 hover:bg-slate-800 text-amber-300 border border-slate-700/60 text-center">
+                Parent
+              </button>
+              <button onClick={() => setDemoRole('admin@padanam.ai')} className="p-2 rounded-lg bg-slate-800/60 hover:bg-slate-800 text-emerald-300 border border-slate-700/60 text-center">
+                Admin
+              </button>
+            </div>
+          </div>
 
           <div className="text-center pt-2">
             <p className="text-xs text-slate-400">

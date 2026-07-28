@@ -24,12 +24,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import NotificationsPage from './pages/NotificationsPage';
 
 function ProtectedLayout({ children, onOpenChat }) {
-  const { user, loginAsDemoRole } = useAuth(); // DEMO MODE
-
-  // DEMO MODE: Auto-inject demo student profile if visiting protected route directly without user session
-  if (!user) { // DEMO MODE
-    loginAsDemoRole('student'); // DEMO MODE
-  } // DEMO MODE
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" replace />;
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
@@ -123,14 +119,6 @@ export default function App() {
               }
             />
             <Route
-              path="/teacher"
-              element={
-                <ProtectedLayout onOpenChat={() => setChatOpen(true)}>
-                  <TeacherDashboard />
-                </ProtectedLayout>
-              }
-            />
-            <Route
               path="/teacher-dashboard"
               element={
                 <ProtectedLayout onOpenChat={() => setChatOpen(true)}>
@@ -139,26 +127,10 @@ export default function App() {
               }
             />
             <Route
-              path="/parent"
-              element={
-                <ProtectedLayout onOpenChat={() => setChatOpen(true)}>
-                  <ParentDashboard />
-                </ProtectedLayout>
-              }
-            />
-            <Route
               path="/parent-dashboard"
               element={
                 <ProtectedLayout onOpenChat={() => setChatOpen(true)}>
                   <ParentDashboard />
-                </ProtectedLayout>
-              }
-            />
-            <Route
-              path="/admin"
-              element={
-                <ProtectedLayout onOpenChat={() => setChatOpen(true)}>
-                  <AdminDashboard />
                 </ProtectedLayout>
               }
             />
